@@ -29,11 +29,13 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 # (2) ORM Base
 # ==============================================================================
 
+
 class Base(DeclarativeBase):
     """SQLAlchemy声明式基类
 
     所有ORM模型都应继承此类。
     """
+
     pass
 
 
@@ -41,8 +43,10 @@ class Base(DeclarativeBase):
 # (3) 枚举类型定义
 # ==============================================================================
 
+
 class IntentType(str, Enum):
     """意图类型枚举"""
+
     CHAT = "chat"
     WEATHER = "weather"
     ROLE_PLAY = "role_play"
@@ -56,6 +60,7 @@ class IntentType(str, Enum):
 
 class ContextType(str, Enum):
     """上下文类型枚举"""
+
     PRIVATE = "private"
     GROUP = "group"
     MULTI_USER = "multi_user"
@@ -64,6 +69,7 @@ class ContextType(str, Enum):
 
 class ContextStatus(str, Enum):
     """上下文状态枚举"""
+
     ACTIVE = "active"
     PAUSED = "paused"
     EXPIRED = "expired"
@@ -73,6 +79,7 @@ class ContextStatus(str, Enum):
 
 class MessageType(str, Enum):
     """消息类型枚举"""
+
     TEXT = "text"
     IMAGE = "image"
     VOICE = "voice"
@@ -82,6 +89,7 @@ class MessageType(str, Enum):
 
 class MessageRole(str, Enum):
     """消息角色枚举"""
+
     USER = "user"
     ASSISTANT = "assistant"
     SYSTEM = "system"
@@ -89,12 +97,14 @@ class MessageRole(str, Enum):
 
 class BanType(str, Enum):
     """封禁类型枚举"""
+
     TEMPORARY = "temporary"
     PERMANENT = "permanent"
 
 
 class BanReason(str, Enum):
     """封禁原因枚举"""
+
     RATE_LIMIT_EXCEEDED = "rate_limit_exceeded"
     TOKEN_ABUSE = "token_abuse"
     MALICIOUS_BEHAVIOR = "malicious_behavior"
@@ -105,6 +115,7 @@ class BanReason(str, Enum):
 # ==============================================================================
 # (4) ORM模型定义
 # ==============================================================================
+
 
 class UserORM(Base):
     """用户表ORM模型
@@ -214,7 +225,9 @@ class MessageORM(Base):
     meta_data: Mapped[str] = mapped_column("metadata", Text, default="{}")
 
     # III. 关系
-    context: Mapped["ContextORM"] = relationship("ContextORM", back_populates="messages")
+    context: Mapped["ContextORM"] = relationship(
+        "ContextORM", back_populates="messages"
+    )
     sender: Mapped["UserORM"] = relationship("UserORM", back_populates="sent_messages")
 
 

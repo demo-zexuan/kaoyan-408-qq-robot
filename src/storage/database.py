@@ -54,6 +54,7 @@ from src.utils.logger import logger
 # (2) 数据库管理器
 # ==============================================================================
 
+
 class DatabaseManager:
     """数据库管理器
 
@@ -83,7 +84,9 @@ class DatabaseManager:
         if self.database_url.startswith("sqlite"):
             # 如果配置里未指定 aiosqlite，自动替换为异步驱动
             if "aiosqlite" not in self.database_url:
-                engine_url = self.database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+                engine_url = self.database_url.replace(
+                    "sqlite://", "sqlite+aiosqlite://", 1
+                )
             else:
                 engine_url = self.database_url
 
@@ -245,6 +248,7 @@ class DatabaseManager:
 # (3) 用户数据访问
 # ==============================================================================
 
+
 class UserRepository:
     """用户数据访问对象
 
@@ -377,9 +381,7 @@ class UserRepository:
             list[User]: 用户列表
         """
         async with self.db.get_session() as session:
-            result = await session.execute(
-                select(UserORM).limit(limit).offset(offset)
-            )
+            result = await session.execute(select(UserORM).limit(limit).offset(offset))
             orm_users = result.scalars().all()
             return [self._orm_to_model(u) for u in orm_users]
 
@@ -416,6 +418,7 @@ class UserRepository:
 # ==============================================================================
 # (4) 上下文数据访问
 # ==============================================================================
+
 
 class ContextRepository:
     """上下文数据访问对象
@@ -498,7 +501,11 @@ class ContextRepository:
                     name=context.name,
                     participants=json.dumps(context.participants),
                     status=context.status,
-                    state=json.dumps(context.state.model_dump()) if context.state else None,
+                    state=(
+                        json.dumps(context.state.model_dump())
+                        if context.state
+                        else None
+                    ),
                     current_role_id=context.current_role_id,
                     meta_data=json.dumps(context.metadata),
                     updated_at=datetime.now(),
@@ -524,7 +531,9 @@ class ContextRepository:
             await session.commit()
             return result.rowcount > 0
 
-    async def list_by_user(self, user_id: str, active_only: bool = False) -> list[Context]:
+    async def list_by_user(
+        self, user_id: str, active_only: bool = False
+    ) -> list[Context]:
         """列出用户的所有上下文
 
         Args:
@@ -536,8 +545,8 @@ class ContextRepository:
         """
         async with self.db.get_session() as session:
             query = select(ContextORM).where(
-                (ContextORM.creator_id == user_id) |
-                (ContextORM.participants.like(f'%"{user_id}"%'))
+                (ContextORM.creator_id == user_id)
+                | (ContextORM.participants.like(f'%"{user_id}"%'))
             )
             if active_only:
                 query = query.where(ContextORM.status == ContextStatus.ACTIVE)
@@ -559,8 +568,8 @@ class ContextRepository:
         async with self.db.get_session() as session:
             result = await session.execute(
                 select(ContextORM).where(
-                    (ContextORM.expires_at < datetime.now()) &
-                    (ContextORM.status == ContextStatus.ACTIVE)
+                    (ContextORM.expires_at < datetime.now())
+                    & (ContextORM.status == ContextStatus.ACTIVE)
                 )
             )
             orm_contexts = result.scalars().all()
@@ -595,9 +604,7 @@ class ContextRepository:
 
     # III. 辅助方法
     @staticmethod
-    async def _orm_to_model(
-            session: AsyncSession, orm_context: ContextORM
-    ) -> Context:
+    async def _orm_to_model(session: AsyncSession, orm_context: ContextORM) -> Context:
         """将ORM对象转换为业务模型"""
         # 加载消息
         messages_result = await session.execute(
@@ -629,7 +636,11 @@ class ContextRepository:
             creator_id=orm_context.creator_id,
             participants=json.loads(orm_context.participants),
             status=orm_context.status,
-            state=RobotState(**json.loads(orm_context.state)) if orm_context.state else None,
+            state=(
+                RobotState(**json.loads(orm_context.state))
+                if orm_context.state
+                else None
+            ),
             current_role_id=orm_context.current_role_id,
             metadata=json.loads(orm_context.meta_data),
             created_at=orm_context.created_at,
@@ -643,6 +654,7 @@ class ContextRepository:
 # ==============================================================================
 # (5) Token配额数据访问
 # ==============================================================================
+
 
 class TokenQuotaRepository:
     """Token配额数据访问对象
@@ -696,7 +708,9 @@ class TokenQuotaRepository:
                 daily_used=quota.daily_used,
                 daily_reset=quota.daily_reset,
                 minute_limit=quota.minute_limit,
-                minute_requests=json.dumps([ts.isoformat() for ts in quota.minute_requests]),
+                minute_requests=json.dumps(
+                    [ts.isoformat() for ts in quota.minute_requests]
+                ),
             )
             session.add(orm_quota)
             await session.commit()
@@ -723,7 +737,9 @@ class TokenQuotaRepository:
                     daily_used=quota.daily_used,
                     daily_reset=quota.daily_reset,
                     minute_limit=quota.minute_limit,
-                    minute_requests=json.dumps([ts.isoformat() for ts in quota.minute_requests]),
+                    minute_requests=json.dumps(
+                        [ts.isoformat() for ts in quota.minute_requests]
+                    ),
                 )
             )
             await session.commit()
@@ -769,8 +785,7 @@ class TokenQuotaRepository:
     def _orm_to_model(orm_quota: TokenQuotaORM) -> TokenQuota:
         """将ORM对象转换为业务模型"""
         minute_requests = [
-            datetime.fromisoformat(ts)
-            for ts in json.loads(orm_quota.minute_requests)
+            datetime.fromisoformat(ts) for ts in json.loads(orm_quota.minute_requests)
         ]
         return TokenQuota(
             user_id=orm_quota.user_id,
@@ -787,6 +802,7 @@ class TokenQuotaRepository:
 # ==============================================================================
 # (6) 封禁记录数据访问
 # ==============================================================================
+
 
 class BanRecordRepository:
     """封禁记录数据访问对象
@@ -839,13 +855,15 @@ class BanRecordRepository:
         async with self.db.get_session() as session:
             result = await session.execute(
                 select(BanRecordORM).where(
-                    (BanRecordORM.user_id == record.user_id) &
-                    (BanRecordORM.started_at == record.started_at)
+                    (BanRecordORM.user_id == record.user_id)
+                    & (BanRecordORM.started_at == record.started_at)
                 )
             )
             orm_record = result.scalar_one_or_none()
             if orm_record is None:
-                raise ValueError(f"Ban record not found for user: {record.user_id} at {record.started_at}")
+                raise ValueError(
+                    f"Ban record not found for user: {record.user_id} at {record.started_at}"
+                )
 
             orm_record.expires_at = record.expires_at
             orm_record.details = record.details
@@ -868,10 +886,10 @@ class BanRecordRepository:
             result = await session.execute(
                 select(BanRecordORM)
                 .where(
-                    (BanRecordORM.user_id == user_id) &
-                    (
-                        (BanRecordORM.ban_type == BanType.PERMANENT) |
-                        (BanRecordORM.expires_at > now)
+                    (BanRecordORM.user_id == user_id)
+                    & (
+                        (BanRecordORM.ban_type == BanType.PERMANENT)
+                        | (BanRecordORM.expires_at > now)
                     )
                 )
                 .order_by(BanRecordORM.started_at.desc())
@@ -917,6 +935,7 @@ class BanRecordRepository:
 # ==============================================================================
 # (7) 角色配置数据访问
 # ==============================================================================
+
 
 class RoleConfigRepository:
     """角色配置数据访问对象

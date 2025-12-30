@@ -130,6 +130,7 @@ def _load_roles_from_directory(roles_dir: Path) -> dict[str, dict]:
 
     return roles
 
+
 # =============================================================================
 # (5) 角色扮演模块
 # =============================================================================
@@ -328,9 +329,7 @@ class RolePlayModule:
         if self.context_manager:
             context.current_role_id = role_id
             await self.context_manager.update_context(context)
-            logger.info(
-                f"Role activated: {role_id} for context {context.context_id}"
-            )
+            logger.info(f"Role activated: {role_id} for context {context.context_id}")
             return True
 
         return False
@@ -377,16 +376,20 @@ class RolePlayModule:
 
             for msg in history:
                 if msg.role != MessageRole.SYSTEM:
-                    messages.append({
-                        "role": msg.role.value,
-                        "content": msg.content,
-                    })
+                    messages.append(
+                        {
+                            "role": msg.role.value,
+                            "content": msg.content,
+                        }
+                    )
 
         # 添加当前用户消息
-        messages.append({
-            "role": "user",
-            "content": user_message,
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": user_message,
+            }
+        )
 
         # 调用LLM生成回复
         try:
@@ -403,9 +406,7 @@ class RolePlayModule:
                 )
 
             role_name = role.name if role else "AI"
-            logger.info(
-                f"Role response generated: {role_name} for user {user_id}"
-            )
+            logger.info(f"Role response generated: {role_name} for user {user_id}")
             return ai_message
 
         except Exception as e:

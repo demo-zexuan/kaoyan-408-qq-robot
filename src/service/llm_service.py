@@ -27,6 +27,7 @@ logger = get_logger(__name__)
 # (3) LLM服务
 # =============================================================================
 
+
 class LLMService:
     """大语言模型服务
 
@@ -68,8 +69,7 @@ class LLMService:
             logger.warning("LLM API key not configured, service will be disabled")
 
         logger.info(
-            f"LLMService initialized: model={self.model}, "
-            f"base_url={self.base_url}"
+            f"LLMService initialized: model={self.model}, " f"base_url={self.base_url}"
         )
 
     # II. 客户端管理
@@ -90,8 +90,7 @@ class LLMService:
                 logger.debug("OpenAI client created")
             except ImportError:
                 logger.error(
-                    "openai package not installed. "
-                    "Install with: uv add openai"
+                    "openai package not installed. " "Install with: uv add openai"
                 )
                 raise RuntimeError(
                     "openai package is required for LLMService. "
@@ -293,7 +292,7 @@ class LLMService:
     # VI. 辅助方法
     @staticmethod
     def _convert_messages(
-            messages: list[ChatMessage] | list[dict],
+        messages: list[ChatMessage] | list[dict],
     ) -> list[dict]:
         """转换消息格式为API格式
 
@@ -308,10 +307,12 @@ class LLMService:
             if isinstance(msg, dict):
                 result.append(msg)
             elif isinstance(msg, ChatMessage):
-                result.append({
-                    "role": msg.role.value,
-                    "content": msg.content,
-                })
+                result.append(
+                    {
+                        "role": msg.role.value,
+                        "content": msg.content,
+                    }
+                )
             else:
                 logger.warning(f"Unknown message type: {type(msg)}")
         return result

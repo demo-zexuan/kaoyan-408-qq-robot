@@ -38,6 +38,7 @@ logger = get_logger(__name__)
 # (3) 消息路由器
 # =============================================================================
 
+
 class MessageRouter:
     """消息路由器
 
@@ -142,7 +143,9 @@ class MessageRouter:
             )
 
             # 3. 确定上下文类型
-            context_type = ContextType.PRIVATE if group_id is None else ContextType.GROUP
+            context_type = (
+                ContextType.PRIVATE if group_id is None else ContextType.GROUP
+            )
             state.context_type = context_type.value
 
             # 4. 获取或创建上下文
@@ -157,7 +160,11 @@ class MessageRouter:
                     user_id,
                     user_name,
                     message_content,
-                    MessageType(message_type) if message_type in MessageType.__members__ else MessageType.TEXT,
+                    (
+                        MessageType(message_type)
+                        if message_type in MessageType.__members__
+                        else MessageType.TEXT
+                    ),
                 )
 
             # 5. 执行LangGraph处理

@@ -21,21 +21,23 @@ from pydantic import BaseModel, ConfigDict, Field
 # (2) 枚举类型定义
 # =============================================================================
 
+
 class IntentType(str, Enum):
     """意图类型枚举
 
     定义系统支持的所有意图类型，用于意图识别和路由。
     """
-    CHAT = "chat"                      # 普通聊天
-    WEATHER = "weather"                # 天气查询
-    ROLE_PLAY = "role_play"            # 角色扮演
+
+    CHAT = "chat"  # 普通聊天
+    WEATHER = "weather"  # 天气查询
+    ROLE_PLAY = "role_play"  # 角色扮演
     CONTEXT_CREATE = "context_create"  # 创建上下文
-    CONTEXT_JOIN = "context_join"      # 加入上下文
-    CONTEXT_LEAVE = "context_leave"    # 离开上下文
-    CONTEXT_END = "context_end"        # 结束上下文
-    USER_BAN = "user_ban"              # 用户封禁
-    COMMAND = "command"                # 命令操作
-    UNKNOWN = "unknown"                # 未知意图
+    CONTEXT_JOIN = "context_join"  # 加入上下文
+    CONTEXT_LEAVE = "context_leave"  # 离开上下文
+    CONTEXT_END = "context_end"  # 结束上下文
+    USER_BAN = "user_ban"  # 用户封禁
+    COMMAND = "command"  # 命令操作
+    UNKNOWN = "unknown"  # 未知意图
 
 
 class RouteTarget(str, Enum):
@@ -43,6 +45,7 @@ class RouteTarget(str, Enum):
 
     定义LangGraph中节点间流转的目标节点。
     """
+
     CHAT_MODULE = "chat_module"
     WEATHER_MODULE = "weather_module"
     ROLE_PLAY_MODULE = "role_play_module"
@@ -57,19 +60,21 @@ class ProcessingStage(str, Enum):
 
     标识消息在处理流程中的当前阶段。
     """
-    RECEIVED = "received"          # 已接收
+
+    RECEIVED = "received"  # 已接收
     PREPROCESSING = "preprocessing"  # 预处理中
     INTENT_CLASSIFYING = "intent_classifying"  # 意图识别中
     CONTEXT_LOADING = "context_loading"  # 上下文加载中
-    PROCESSING = "processing"      # 处理中
+    PROCESSING = "processing"  # 处理中
     POSTPROCESSING = "postprocessing"  # 后处理中
-    COMPLETED = "completed"        # 已完成
-    FAILED = "failed"              # 失败
+    COMPLETED = "completed"  # 已完成
+    FAILED = "failed"  # 失败
 
 
 # =============================================================================
 # (3) 核心状态模型
 # =============================================================================
+
 
 class RobotState(BaseModel):
     """机器人核心状态模型
@@ -94,8 +99,12 @@ class RobotState(BaseModel):
 
     # III. 意图和路由
     intent: IntentType = Field(default=IntentType.UNKNOWN, description="识别的意图类型")
-    intent_confidence: float = Field(default=0.0, ge=0.0, le=1.0, description="意图识别置信度")
-    route_target: RouteTarget = Field(default=RouteTarget.CHAT_MODULE, description="路由目标")
+    intent_confidence: float = Field(
+        default=0.0, ge=0.0, le=1.0, description="意图识别置信度"
+    )
+    route_target: RouteTarget = Field(
+        default=RouteTarget.CHAT_MODULE, description="路由目标"
+    )
     processing_stage: ProcessingStage = Field(
         default=ProcessingStage.RECEIVED, description="当前处理阶段"
     )
@@ -103,7 +112,9 @@ class RobotState(BaseModel):
     # IV. 上下文信息
     context_id: Optional[str] = Field(default=None, description="当前上下文ID")
     context_type: Optional[str] = Field(default=None, description="上下文类型")
-    context_data: dict[str, Any] = Field(default_factory=dict, description="上下文附加数据")
+    context_data: dict[str, Any] = Field(
+        default_factory=dict, description="上下文附加数据"
+    )
 
     # V. 对话历史
     conversation_history: list[dict[str, Any]] = Field(
@@ -123,8 +134,12 @@ class RobotState(BaseModel):
 
     # VIII. 元数据
     metadata: dict[str, Any] = Field(default_factory=dict, description="附加元数据")
-    created_at: datetime = Field(default_factory=datetime.now, description="状态创建时间")
-    updated_at: datetime = Field(default_factory=datetime.now, description="状态更新时间")
+    created_at: datetime = Field(
+        default_factory=datetime.now, description="状态创建时间"
+    )
+    updated_at: datetime = Field(
+        default_factory=datetime.now, description="状态更新时间"
+    )
 
     # IX. 实体提取结果
     entities: dict[str, Any] = Field(
@@ -141,6 +156,7 @@ class RobotState(BaseModel):
 # =============================================================================
 # (4) 辅助状态模型
 # =============================================================================
+
 
 class IntentResult(BaseModel):
     """意图识别结果模型"""
@@ -168,12 +184,15 @@ class MessageProcessingResult(BaseModel):
     error: Optional[str] = Field(default=None, description="错误信息")
     processing_time_ms: int = Field(default=0, description="处理耗时（毫秒）")
     tokens_used: int = Field(default=0, description="使用的Token数")
-    state_snapshot: Optional[RobotState] = Field(default=None, description="最终状态快照")
+    state_snapshot: Optional[RobotState] = Field(
+        default=None, description="最终状态快照"
+    )
 
 
 # =============================================================================
 # (5) 状态工具函数
 # =============================================================================
+
 
 def create_initial_state(
     message_id: str,

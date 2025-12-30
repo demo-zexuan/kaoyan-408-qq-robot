@@ -34,6 +34,7 @@ logger = get_logger(__name__)
 # (3) LangGraph管理器
 # =============================================================================
 
+
 class LangGraphManager:
     """LangGraph管理器
 
@@ -53,9 +54,9 @@ class LangGraphManager:
 
     # I. 初始化
     def __init__(
-            self,
-            intent_classifier: Optional[Callable] = None,
-            response_generator: Optional[Callable] = None,
+        self,
+        intent_classifier: Optional[Callable] = None,
+        response_generator: Optional[Callable] = None,
     ) -> None:
         """初始化LangGraph管理器
 
@@ -364,10 +365,10 @@ class LangGraphManager:
         elif intent == IntentType.ROLE_PLAY:
             return RouteTarget.ROLE_PLAY_MODULE
         elif intent in (
-                IntentType.CONTEXT_CREATE,
-                IntentType.CONTEXT_JOIN,
-                IntentType.CONTEXT_LEAVE,
-                IntentType.CONTEXT_END,
+            IntentType.CONTEXT_CREATE,
+            IntentType.CONTEXT_JOIN,
+            IntentType.CONTEXT_LEAVE,
+            IntentType.CONTEXT_END,
         ):
             return RouteTarget.CONTEXT_HANDLER
         elif intent == IntentType.CHAT:
@@ -464,7 +465,10 @@ class LangGraphManager:
 # (4) 辅助函数
 # =============================================================================
 
-def state_to_messages(state: RobotState) -> list[HumanMessage | AIMessage | SystemMessage]:
+
+def state_to_messages(
+    state: RobotState,
+) -> list[HumanMessage | AIMessage | SystemMessage]:
     """将RobotState转换为LangChain消息列表
 
     Args:
@@ -493,7 +497,7 @@ def state_to_messages(state: RobotState) -> list[HumanMessage | AIMessage | Syst
 
 
 def messages_to_state(
-        state: RobotState, messages: list[HumanMessage | AIMessage | SystemMessage]
+    state: RobotState, messages: list[HumanMessage | AIMessage | SystemMessage]
 ) -> RobotState:
     """将LangChain消息列表转换回RobotState
 
@@ -526,8 +530,8 @@ _default_langgraph_manager: Optional[LangGraphManager] = None
 
 
 def get_langgraph_manager(
-        intent_classifier: Optional[Callable] = None,
-        response_generator: Optional[Callable] = None,
+    intent_classifier: Optional[Callable] = None,
+    response_generator: Optional[Callable] = None,
 ) -> LangGraphManager:
     """获取默认LangGraph管理器实例
 

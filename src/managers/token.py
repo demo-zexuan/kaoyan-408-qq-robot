@@ -33,6 +33,7 @@ logger = get_logger(__name__)
 # (3) Token控制器
 # =============================================================================
 
+
 class TokenController:
     """Token控制器
 
@@ -367,8 +368,7 @@ class TokenController:
         now = datetime.now()
         # 清理超过1分钟的记录
         quota.minute_requests = [
-            ts for ts in quota.minute_requests
-            if (now - ts).total_seconds() < 60
+            ts for ts in quota.minute_requests if (now - ts).total_seconds() < 60
         ]
         # 添加当前请求
         quota.minute_requests.append(now)
@@ -386,10 +386,7 @@ class TokenController:
         """
         now = datetime.now()
         # 过滤1分钟内的请求
-        recent = [
-            ts for ts in quota.minute_requests
-            if (now - ts).total_seconds() < 60
-        ]
+        recent = [ts for ts in quota.minute_requests if (now - ts).total_seconds() < 60]
         return len(recent) < quota.minute_limit
 
     @staticmethod

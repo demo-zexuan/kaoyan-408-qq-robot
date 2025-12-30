@@ -37,6 +37,7 @@ logger = get_logger(__name__)
 # (3) 用户管理器
 # =============================================================================
 
+
 class UserManager:
     """用户管理器
 
@@ -373,10 +374,7 @@ class UserManager:
         all_users = await self.user_repo.list_all()
 
         # 过滤活跃用户并按最后活跃时间排序
-        active_users = [
-            u for u in all_users
-            if u.is_active and not u.is_banned
-        ]
+        active_users = [u for u in all_users if u.is_active and not u.is_banned]
         active_users.sort(key=lambda u: u.last_active, reverse=True)
 
         return active_users[:limit]

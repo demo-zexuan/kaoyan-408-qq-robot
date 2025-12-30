@@ -40,25 +40,23 @@ logger = get_logger(__name__)
 DEFAULT_DETECTION_RULES = {
     # 短时间大量请求检测
     "rapid_request_threshold": 10,  # 10次请求
-    "rapid_request_window": 60,     # 60秒内
-
+    "rapid_request_window": 60,  # 60秒内
     # Token消耗异常检测
     "token_burst_threshold": 1000,  # 单次1000 token
-    "token_rate_threshold": 5000,   # 每分钟5000 token
-
+    "token_rate_threshold": 5000,  # 每分钟5000 token
     # 刷屏检测
-    "spam_message_threshold": 5,    # 5条消息
-    "spam_window": 10,              # 10秒内
-
+    "spam_message_threshold": 5,  # 5条消息
+    "spam_window": 10,  # 10秒内
     # 重复内容检测
-    "repeat_threshold": 3,          # 3次重复
-    "repeat_window": 30,            # 30秒内
+    "repeat_threshold": 3,  # 3次重复
+    "repeat_window": 30,  # 30秒内
 }
 
 
 # =============================================================================
 # (4) 封禁管理器
 # =============================================================================
+
 
 class BanManager:
     """封禁管理器
@@ -377,7 +375,8 @@ class BanManager:
         threshold = self.detection_rules["rapid_request_threshold"]
 
         self._user_requests[user_id] = [
-            ts for ts in self._user_requests[user_id]
+            ts
+            for ts in self._user_requests[user_id]
             if (now - ts).total_seconds() < window
         ]
 
@@ -405,9 +404,7 @@ class BanManager:
         # 单次Token消耗异常
         burst_threshold = self.detection_rules["token_burst_threshold"]
         if tokens_used > burst_threshold:
-            logger.warning(
-                f"Token burst detected for {user_id}: {tokens_used} tokens"
-            )
+            logger.warning(f"Token burst detected for {user_id}: {tokens_used} tokens")
             return True
 
         # TODO: 实现每分钟Token消耗速率检测
@@ -437,7 +434,8 @@ class BanManager:
         threshold = self.detection_rules["spam_message_threshold"]
 
         self._user_messages[user_id] = [
-            ts for ts in self._user_messages[user_id]
+            ts
+            for ts in self._user_messages[user_id]
             if (now - ts).total_seconds() < window
         ]
 
@@ -473,14 +471,14 @@ class BanManager:
         threshold = self.detection_rules["repeat_threshold"]
 
         self._user_content[user_id] = [
-            (ts, cnt) for ts, cnt in self._user_content[user_id]
+            (ts, cnt)
+            for ts, cnt in self._user_content[user_id]
             if (now - ts).total_seconds() < window
         ]
 
         # 检查是否有重复内容
         content_count = sum(
-            1 for _, cnt in self._user_content[user_id]
-            if cnt == content
+            1 for _, cnt in self._user_content[user_id] if cnt == content
         )
 
         # 记录当前内容
@@ -535,8 +533,7 @@ class BanManager:
         """
         for user_id in list(self._user_requests.keys()):
             self._user_requests[user_id] = [
-                ts for ts in self._user_requests.get(user_id, [])
-                if ts > before
+                ts for ts in self._user_requests.get(user_id, []) if ts > before
             ]
             if not self._user_requests[user_id]:
                 del self._user_requests[user_id]

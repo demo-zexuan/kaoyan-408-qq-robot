@@ -38,6 +38,7 @@ from src.storage.models import (
 # (2) Redis管理器
 # ==============================================================================
 
+
 class RedisManager:
     """Redis管理器
 
@@ -118,6 +119,7 @@ class RedisManager:
 # ==============================================================================
 # (3) 上下文缓存
 # ==============================================================================
+
 
 class ContextCache:
     """上下文缓存
@@ -234,21 +236,25 @@ class ContextCache:
                 msg_dict["timestamp"] = msg_dict["timestamp"].isoformat()
             serialized_messages.append(msg_dict)
 
-        return json.dumps({
-            "context_id": context.context_id,
-            "type": context.type.value,
-            "name": context.name,
-            "creator_id": context.creator_id,
-            "participants": context.participants,
-            "status": context.status.value,
-            "state": context.state.model_dump() if context.state else None,
-            "metadata": context.metadata,
-            "created_at": context.created_at.isoformat(),
-            "updated_at": context.updated_at.isoformat(),
-            "expires_at": context.expires_at.isoformat() if context.expires_at else None,
-            "messages": serialized_messages,
-            "max_messages": context.max_messages,
-        })
+        return json.dumps(
+            {
+                "context_id": context.context_id,
+                "type": context.type.value,
+                "name": context.name,
+                "creator_id": context.creator_id,
+                "participants": context.participants,
+                "status": context.status.value,
+                "state": context.state.model_dump() if context.state else None,
+                "metadata": context.metadata,
+                "created_at": context.created_at.isoformat(),
+                "updated_at": context.updated_at.isoformat(),
+                "expires_at": (
+                    context.expires_at.isoformat() if context.expires_at else None
+                ),
+                "messages": serialized_messages,
+                "max_messages": context.max_messages,
+            }
+        )
 
     @staticmethod
     def _deserialize(data: str) -> Context:
@@ -265,7 +271,11 @@ class ContextCache:
             metadata=obj.get("metadata", {}),
             created_at=datetime.fromisoformat(obj["created_at"]),
             updated_at=datetime.fromisoformat(obj["updated_at"]),
-            expires_at=datetime.fromisoformat(obj["expires_at"]) if obj.get("expires_at") else None,
+            expires_at=(
+                datetime.fromisoformat(obj["expires_at"])
+                if obj.get("expires_at")
+                else None
+            ),
             messages=[ChatMessage(**msg) for msg in obj.get("messages", [])],
             max_messages=obj.get("max_messages", 200),
         )
@@ -274,6 +284,7 @@ class ContextCache:
 # ==============================================================================
 # (4) 用户状态缓存
 # ==============================================================================
+
 
 class UserCache:
     """用户状态缓存
@@ -363,17 +374,14 @@ class UserCache:
         """
         client = await self.redis.get_client()
         key = self._make_key(user_id)
-        await client.hset(
-            key,
-            "last_active",
-            datetime.now().isoformat()
-        )
+        await client.hset(key, "last_active", datetime.now().isoformat())
         await client.expire(key, self.TTL_SECONDS)
 
 
 # ==============================================================================
 # (5) Token配额缓存
 # ==============================================================================
+
 
 class TokenCache:
     """Token配额缓存
@@ -415,7 +423,9 @@ class TokenCache:
             return json.loads(data)
         return None
 
-    async def set_quota(self, user_id: str, quota: TokenQuota, ttl: int = 86400) -> None:
+    async def set_quota(
+        self, user_id: str, quota: TokenQuota, ttl: int = 86400
+    ) -> None:
         """保存用户配额信息
 
         Args:
@@ -525,6 +535,7 @@ class TokenCache:
 # (6) 封禁记录缓存
 # ==============================================================================
 
+
 class BanCache:
     """封禁记录缓存
 
@@ -590,7 +601,9 @@ class BanCache:
             "reason": ban_record.reason.value,
             "ban_type": ban_record.ban_type.value,
             "started_at": ban_record.started_at.isoformat(),
-            "expires_at": ban_record.expires_at.isoformat() if ban_record.expires_at else None,
+            "expires_at": (
+                ban_record.expires_at.isoformat() if ban_record.expires_at else None
+            ),
             "details": ban_record.details,
         }
 
@@ -624,6 +637,7 @@ class BanCache:
 # ==============================================================================
 # (7) 统一缓存管理器
 # ==============================================================================
+
 
 class CacheManager:
     """统一缓存管理器

@@ -20,7 +20,7 @@ from .path_config import get_resource_path
 
 __all__ = [
     # Legacy
-    'load_qq_robot_config',
+    "load_qq_robot_config",
     # Config
     "AppConfig",
     "Config",

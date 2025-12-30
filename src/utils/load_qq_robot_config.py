@@ -3,6 +3,7 @@ QQ机器人配置加载模块（Legacy）
 
 保留以兼容旧代码。
 """
+
 from __future__ import annotations
 
 import tomllib

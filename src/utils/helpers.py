@@ -22,6 +22,7 @@ from src.utils.logger import logger
 # (2) 文本处理工具
 # ==============================================================================
 
+
 class TextHelper:
     """文本处理辅助类
 
@@ -85,7 +86,7 @@ class TextHelper:
         """
         if len(text) <= max_length:
             return text
-        return text[:max_length - len(suffix)] + suffix
+        return text[: max_length - len(suffix)] + suffix
 
     @staticmethod
     def remove_punctuation(text: str) -> str:
@@ -201,6 +202,7 @@ class TextHelper:
 # (3) ID生成工具
 # ==============================================================================
 
+
 class IDHelper:
     """ID生成辅助类
 
@@ -289,6 +291,7 @@ class IDHelper:
 # (4) 实体提取工具
 # ==============================================================================
 
+
 class EntityHelper:
     """实体提取辅助类
 
@@ -363,8 +366,20 @@ class EntityHelper:
         # 简单的城市名匹配（实际应该使用地址解析库）
         # 常见城市列表
         common_cities = [
-            "北京", "上海", "广州", "深圳", "杭州", "成都", "重庆",
-            "武汉", "西安", "南京", "天津", "苏州", "长沙", "郑州",
+            "北京",
+            "上海",
+            "广州",
+            "深圳",
+            "杭州",
+            "成都",
+            "重庆",
+            "武汉",
+            "西安",
+            "南京",
+            "天津",
+            "苏州",
+            "长沙",
+            "郑州",
         ]
 
         for city in common_cities:
@@ -422,6 +437,7 @@ class EntityHelper:
 # ==============================================================================
 # (5) 日期时间工具
 # ==============================================================================
+
 
 class DatetimeHelper:
     """日期时间辅助类

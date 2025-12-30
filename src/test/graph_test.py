@@ -23,14 +23,17 @@ from langgraph.graph import StateGraph, END
 # 方式一：使用 Pydantic BaseModel（推荐，LangGraph 官方支持）
 # =============================================================================
 
+
 class SimpleState(BaseModel):
     """最简单的状态定义"""
+
     messages: List[str] = Field(default_factory=list)
     count: int = 0
 
 
 class AgentState(BaseModel):
     """典型智能体状态 - 使用 Pydantic BaseModel"""
+
     messages: List[str] = Field(default_factory=list)
     user_input: str = ""
     response: str = ""
@@ -42,12 +45,13 @@ class AgentState(BaseModel):
 # =============================================================================
 # 节点函数现在接收并返回完整的 State 对象
 
+
 def hello_node(state: AgentState) -> dict:
     """简单的问候节点 - 返回需要更新的字段"""
     print(f"[Hello Node] 收到消息: {state.user_input}")
     return {
         "messages": state.messages + ["系统: 你好！"],
-        "step_count": state.step_count + 1
+        "step_count": state.step_count + 1,
     }
 
 
@@ -58,7 +62,7 @@ def process_node(state: AgentState) -> dict:
     return {
         "messages": state.messages + [f"处理: {response}"],
         "response": response,
-        "step_count": state.step_count + 1
+        "step_count": state.step_count + 1,
     }
 
 
@@ -67,13 +71,14 @@ def goodbye_node(state: AgentState) -> dict:
     print(f"[Goodbye Node] 执行了 {state.step_count} 步")
     return {
         "messages": state.messages + ["系统: 再见！"],
-        "step_count": state.step_count + 1
+        "step_count": state.step_count + 1,
     }
 
 
 # =============================================================================
 # 第三部分：条件边(Conditional Edge)定义
 # =============================================================================
+
 
 def should_continue(state: AgentState) -> str:
     """条件函数：决定下一步走向"""
@@ -97,6 +102,7 @@ def route_by_length(state: AgentState) -> str:
 # =============================================================================
 # 第四部分：示例 1 - 最简单的线性图
 # =============================================================================
+
 
 def create_simple_linear_graph():
     """
@@ -127,6 +133,7 @@ def create_simple_linear_graph():
 # 第五部分：示例 2 - 带条件分支的图
 # =============================================================================
 
+
 def conditional_response_node(state: AgentState) -> dict:
     """根据不同条件返回不同响应"""
     if "天气" in state.user_input.lower():
@@ -136,7 +143,7 @@ def conditional_response_node(state: AgentState) -> dict:
     return {
         "messages": state.messages + [f"响应: {response}"],
         "response": response,
-        "step_count": state.step_count + 1
+        "step_count": state.step_count + 1,
     }
 
 
@@ -171,10 +178,10 @@ def create_conditional_graph():
         "hello",
         should_continue,
         {
-            "process": "process",      # 正常处理
+            "process": "process",  # 正常处理
             "weather": "conditional",  # 天气查询
-            "end": "goodbye"           # 直接结束
-        }
+            "end": "goodbye",  # 直接结束
+        },
     )
 
     # 汇聚到goodbye节点
@@ -189,8 +196,10 @@ def create_conditional_graph():
 # 第六部分：示例 3 - 带循环的图（典型RAG模式）
 # =============================================================================
 
+
 class RAGState(BaseModel):
     """RAG应用的状态定义"""
+
     question: str = ""
     documents: List[str] = Field(default_factory=list)
     answer: str = ""
@@ -201,21 +210,18 @@ def retrieve_node(state: RAGState) -> dict:
     """检索节点：模拟从知识库检索相关文档"""
     print(f"[检索] 为问题检索文档: {state.question}")
     # 模拟检索结果
-    docs = [f"文档1: 关于{state.question}的相关信息", f"文档2: {state.question}的详细说明"]
-    return {
-        "documents": docs,
-        "iterations": state.iterations + 1
-    }
+    docs = [
+        f"文档1: 关于{state.question}的相关信息",
+        f"文档2: {state.question}的详细说明",
+    ]
+    return {"documents": docs, "iterations": state.iterations + 1}
 
 
 def generate_node(state: RAGState) -> dict:
     """生成节点：基于检索结果生成答案"""
     print(f"[生成] 基于文档生成答案")
     answer = f"基于 {len(state.documents)} 个文档，针对问题 '{state.question}' 的答案是：这是一个模拟答案。"
-    return {
-        "answer": answer,
-        "iterations": state.iterations + 1
-    }
+    return {"answer": answer, "iterations": state.iterations + 1}
 
 
 def grade_answer(state: RAGState) -> str:
@@ -254,10 +260,7 @@ def create_rag_graph():
     graph.add_conditional_edges(
         "generate",
         grade_answer,
-        {
-            "retrieve": "retrieve",  # 重新检索
-            "end": END               # 结束
-        }
+        {"retrieve": "retrieve", "end": END},  # 重新检索  # 结束
     )
 
     return graph.compile()
@@ -267,8 +270,10 @@ def create_rag_graph():
 # 第七部分：示例 4 - 多智能体协作图
 # =============================================================================
 
+
 class MultiAgentState(BaseModel):
     """多智能体协作的状态"""
+
     task: str = ""
     research_result: str = ""
     analysis_result: str = ""
@@ -282,7 +287,7 @@ def researcher_agent(state: MultiAgentState) -> dict:
     result = f"关于'{state.task}'的研究数据：[模拟数据1, 模拟数据2, 模拟数据3]"
     return {
         "research_result": result,
-        "agent_history": state.agent_history + ["研究智能体已完成"]
+        "agent_history": state.agent_history + ["研究智能体已完成"],
     }
 
 
@@ -292,7 +297,7 @@ def analyst_agent(state: MultiAgentState) -> dict:
     result = f"分析结果：基于研究数据 '{state.research_result[:20]}...' 的深度分析"
     return {
         "analysis_result": result,
-        "agent_history": state.agent_history + ["分析智能体已完成"]
+        "agent_history": state.agent_history + ["分析智能体已完成"],
     }
 
 
@@ -313,7 +318,7 @@ def writer_agent(state: MultiAgentState) -> dict:
     """
     return {
         "final_report": report,
-        "agent_history": state.agent_history + ["写作智能体已完成"]
+        "agent_history": state.agent_history + ["写作智能体已完成"],
     }
 
 
@@ -352,6 +357,7 @@ def create_multi_agent_graph():
 # 第八部分：运行示例的主函数
 # =============================================================================
 
+
 def print_separator(title: str) -> None:
     """打印分隔符"""
     print("\n" + "=" * 60)
@@ -365,12 +371,9 @@ def run_examples() -> None:
     # ========== 示例 1: 线性图 ==========
     print_separator("示例 1: 简单线性图")
     linear_graph = create_simple_linear_graph()
-    result = linear_graph.invoke(AgentState(
-        user_input="测试消息",
-        messages=[],
-        response="",
-        step_count=0
-    ))
+    result = linear_graph.invoke(
+        AgentState(user_input="测试消息", messages=[], response="", step_count=0)
+    )
     print(f"\n最终结果:")
     print(f"  消息记录: {result['messages']}")
     print(f"  执行步数: {result['step_count']}")
@@ -378,12 +381,9 @@ def run_examples() -> None:
     # ========== 示例 2: 条件分支图 ==========
     print_separator("示例 2: 条件分支图（天气查询）")
     conditional_graph = create_conditional_graph()
-    result = conditional_graph.invoke(AgentState(
-        user_input="今天天气怎么样",
-        messages=[],
-        response="",
-        step_count=0
-    ))
+    result = conditional_graph.invoke(
+        AgentState(user_input="今天天气怎么样", messages=[], response="", step_count=0)
+    )
     print(f"\n最终结果:")
     print(f"  响应: {result['response']}")
     print(f"  消息记录: {result['messages']}")
@@ -391,12 +391,9 @@ def run_examples() -> None:
     # ========== 示例 3: RAG循环图 ==========
     print_separator("示例 3: RAG循环图")
     rag_graph = create_rag_graph()
-    result = rag_graph.invoke(RAGState(
-        question="什么是LangGraph？",
-        documents=[],
-        answer="",
-        iterations=0
-    ))
+    result = rag_graph.invoke(
+        RAGState(question="什么是LangGraph？", documents=[], answer="", iterations=0)
+    )
     print(f"\n最终结果:")
     print(f"  问题: {result['question']}")
     print(f"  答案: {result['answer']}")
@@ -405,13 +402,15 @@ def run_examples() -> None:
     # ========== 示例 4: 多智能体协作 ==========
     print_separator("示例 4: 多智能体协作")
     multi_agent_graph = create_multi_agent_graph()
-    result = multi_agent_graph.invoke(MultiAgentState(
-        task="分析2024年AI发展趋势",
-        research_result="",
-        analysis_result="",
-        final_report="",
-        agent_history=[]
-    ))
+    result = multi_agent_graph.invoke(
+        MultiAgentState(
+            task="分析2024年AI发展趋势",
+            research_result="",
+            analysis_result="",
+            final_report="",
+            agent_history=[],
+        )
+    )
     print(f"\n最终结果:")
     print(f"  任务: {result['task']}")
     print(f"  智能体执行历史: {result['agent_history']}")
@@ -425,6 +424,7 @@ def run_examples() -> None:
 # =============================================================================
 # 第九部分：可视化图结构（需要额外依赖）
 # =============================================================================
+
 
 def visualize_graphs() -> None:
     """
@@ -457,6 +457,7 @@ def visualize_graphs() -> None:
 # =============================================================================
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+
 
 def load_documents_example() -> List:
     """

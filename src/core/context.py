@@ -42,6 +42,7 @@ logger = get_logger(__name__)
 # (3) 存储策略接口
 # =============================================================================
 
+
 class ContextStorage:
     """上下文存储策略基类
 
@@ -240,9 +241,9 @@ class HybridContextStorage(ContextStorage):
 
     # I. 初始化
     def __init__(
-            self,
-            cache_storage: RedisContextStorage,
-            db_storage: DatabaseContextStorage,
+        self,
+        cache_storage: RedisContextStorage,
+        db_storage: DatabaseContextStorage,
     ) -> None:
         """初始化混合上下文存储
 
@@ -293,6 +294,7 @@ class HybridContextStorage(ContextStorage):
 # (4) 上下文管理器
 # =============================================================================
 
+
 class ContextManager:
     """上下文管理器
 
@@ -308,10 +310,10 @@ class ContextManager:
 
     # I. 初始化
     def __init__(
-            self,
-            db_manager: DatabaseManager,
-            cache_manager: CacheManager,
-            storage: Optional[ContextStorage] = None,
+        self,
+        db_manager: DatabaseManager,
+        cache_manager: CacheManager,
+        storage: Optional[ContextStorage] = None,
     ) -> None:
         """初始化上下文管理器
 
@@ -337,13 +339,13 @@ class ContextManager:
     # II. 上下文CRUD操作
     @validate_call
     async def create_context(
-            self,
-            context_type: ContextType,
-            creator_id: str,
-            name: str = "",
-            participants: Optional[list[str]] = None,
-            expires_in_hours: Optional[int] = None,
-            metadata: Optional[dict[str, Any]] = None,
+        self,
+        context_type: ContextType,
+        creator_id: str,
+        name: str = "",
+        participants: Optional[list[str]] = None,
+        expires_in_hours: Optional[int] = None,
+        metadata: Optional[dict[str, Any]] = None,
     ) -> Context:
         """创建新上下文
 
@@ -453,7 +455,7 @@ class ContextManager:
     # III. 参与者管理
     @validate_call
     async def add_participant(
-            self, context_id: str, user_id: str, user_name: str = ""
+        self, context_id: str, user_id: str, user_name: str = ""
     ) -> bool:
         """添加参与者到上下文
 
@@ -517,14 +519,14 @@ class ContextManager:
     # IV. 消息管理
     @validate_call
     async def add_message(
-            self,
-            context_id: str,
-            sender_id: str,
-            sender_name: str,
-            content: str,
-            message_type: MessageType = MessageType.TEXT,
-            role: MessageRole = MessageRole.USER,
-            is_system: bool = False,
+        self,
+        context_id: str,
+        sender_id: str,
+        sender_name: str,
+        content: str,
+        message_type: MessageType = MessageType.TEXT,
+        role: MessageRole = MessageRole.USER,
+        is_system: bool = False,
     ) -> bool:
         """添加消息到上下文
 
@@ -565,12 +567,12 @@ class ContextManager:
 
         # 限制消息数量
         if len(context.messages) > context.max_messages:
-            context.messages = context.messages[-context.max_messages:]
+            context.messages = context.messages[-context.max_messages :]
 
         return await self.update_context(context)
 
     async def get_messages(
-            self, context_id: str, limit: Optional[int] = None
+        self, context_id: str, limit: Optional[int] = None
     ) -> list[ChatMessage]:
         """获取上下文消息历史
 
@@ -592,7 +594,9 @@ class ContextManager:
         return messages
 
     # V. 查询操作
-    async def list_active_contexts(self, user_id: Optional[str] = None) -> list[Context]:
+    async def list_active_contexts(
+        self, user_id: Optional[str] = None
+    ) -> list[Context]:
         """列出活跃上下文
 
         Args:
@@ -682,8 +686,8 @@ _default_context_manager: Optional[ContextManager] = None
 
 
 def get_context_manager(
-        db_manager: DatabaseManager,
-        cache_manager: CacheManager,
+    db_manager: DatabaseManager,
+    cache_manager: CacheManager,
 ) -> ContextManager:
     """获取默认上下文管理器实例
 

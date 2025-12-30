@@ -187,10 +187,12 @@ class ChatModule:
         Returns:
             消息列表
         """
-        messages = [{
-            "role": "system",
-            "content": self.system_prompt,
-        }]
+        messages = [
+            {
+                "role": "system",
+                "content": self.system_prompt,
+            }
+        ]
 
         # 添加系统提示
 
@@ -204,16 +206,20 @@ class ChatModule:
             for msg in history:
                 # 跳过系统消息和当前用户消息
                 if msg.role != MessageRole.SYSTEM:
-                    messages.append({
-                        "role": msg.role.value,
-                        "content": msg.content,
-                    })
+                    messages.append(
+                        {
+                            "role": msg.role.value,
+                            "content": msg.content,
+                        }
+                    )
 
         # 添加当前用户消息
-        messages.append({
-            "role": "user",
-            "content": user_message,
-        })
+        messages.append(
+            {
+                "role": "user",
+                "content": user_message,
+            }
+        )
 
         return messages
 

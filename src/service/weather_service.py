@@ -195,9 +195,7 @@ class WeatherService:
             return None
 
         try:
-            data = await self._call_weather_api_by_coords(
-                latitude, longitude, days
-            )
+            data = await self._call_weather_api_by_coords(latitude, longitude, days)
 
             if data:
                 location = data.get("name", f"{latitude},{longitude}")
@@ -314,7 +312,7 @@ class WeatherService:
     # VI. 数据解析
     @staticmethod
     def _parse_weather_data(
-            data: dict,
+        data: dict,
         location: str,
     ) -> Optional[WeatherData]:
         """解析天气API数据
@@ -338,11 +336,15 @@ class WeatherService:
             # 解析预报
             forecast = []
             for day_data in data.get("weather", [])[:7]:
-                forecast.append({
-                    "date": day_data.get("date", ""),
-                    "temperature": f"{day_data.get('maxtempC', '')}/{day_data.get('mintempC', '')}",
-                    "description": day_data.get("hourly", [{}])[0].get("weatherDesc", [{}])[0].get("value", ""),
-                })
+                forecast.append(
+                    {
+                        "date": day_data.get("date", ""),
+                        "temperature": f"{day_data.get('maxtempC', '')}/{day_data.get('mintempC', '')}",
+                        "description": day_data.get("hourly", [{}])[0]
+                        .get("weatherDesc", [{}])[0]
+                        .get("value", ""),
+                    }
+                )
 
             return WeatherData(
                 location=location,

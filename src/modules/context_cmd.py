@@ -345,10 +345,7 @@ class ContextCommandModule:
             contexts = await self.context_manager.list_active_contexts()
 
             # 过滤用户参与的上下文
-            user_contexts = [
-                ctx for ctx in contexts
-                if user_id in ctx.participants
-            ]
+            user_contexts = [ctx for ctx in contexts if user_id in ctx.participants]
 
             if not user_contexts:
                 return "📭 您暂无活跃的上下文"

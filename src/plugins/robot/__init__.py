@@ -13,7 +13,12 @@ import asyncio
 from typing import Optional
 
 from nonebot import get_driver, on_command, on_message
-from nonebot.adapters.onebot.v11 import Bot, GroupMessageEvent, MessageEvent, PrivateMessageEvent
+from nonebot.adapters.onebot.v11 import (
+    Bot,
+    GroupMessageEvent,
+    MessageEvent,
+    PrivateMessageEvent,
+)
 from nonebot.plugin import PluginMetadata
 from src.service import get_llm_service
 
@@ -37,7 +42,12 @@ from src.modules import (
     get_role_play_module,
     get_weather_module,
 )
-from src.storage import CacheManager, DatabaseManager, get_cache_manager, get_database_manager
+from src.storage import (
+    CacheManager,
+    DatabaseManager,
+    get_cache_manager,
+    get_database_manager,
+)
 from src.utils.config import get_config
 from src.utils.logger import get_logger
 
@@ -195,7 +205,7 @@ def _get_user_name(event: MessageEvent) -> str:
     Returns:
         用户名称
     """
-    if hasattr(event, 'sender') and event.sender:
+    if hasattr(event, "sender") and event.sender:
         return event.sender.nickname or ""
     return ""
 
@@ -218,10 +228,12 @@ async def handle_message(bot: Bot, event: MessageEvent):
         event: 消息事件
     """
     content = event.get_plaintext().strip()
-    if content is not None and 'csn' in content:
+    if content is not None and "csn" in content:
         # 使用 matcher.send() 而非 bot.send()，兼容性更好
         # send() 只发送消息，不抛出 FinishedException
-        await bot.send(event=event, message='反弹！👴csn！', at_sender=True, reply_message=True)
+        await bot.send(
+            event=event, message="反弹！👴csn！", at_sender=True, reply_message=True
+        )
 
 
 # =============================================================================
@@ -253,13 +265,19 @@ async def handle_weather(bot: Bot, event: MessageEvent):
 # 创建上下文命令
 create_context_cmd = on_command("创建上下文", priority=5, block=True)
 
+
 @create_context_cmd.handle()
 async def handle_create_context(bot: Bot, event: MessageEvent):
     """处理创建上下文命令"""
     global context_cmd_module
 
     if not context_cmd_module:
-        await create_context_cmd.finish(event=event, message="上下文服务未初始化", at_sender=True, reply_message=True)
+        await create_context_cmd.finish(
+            event=event,
+            message="上下文服务未初始化",
+            at_sender=True,
+            reply_message=True,
+        )
 
     try:
         user_id = _get_user_key(event)
@@ -294,9 +312,13 @@ async def handle_join_context(bot: Bot, event: MessageEvent):
         context_id = message.replace("加入上下文", "").strip()
 
         if not context_id:
-            await join_context_cmd.finish("请输入要加入的上下文ID\n格式: /加入上下文 <上下文ID>")
+            await join_context_cmd.finish(
+                "请输入要加入的上下文ID\n格式: /加入上下文 <上下文ID>"
+            )
 
-        result = await context_cmd_module.cmd_join_context(user_id, context_id, user_name)
+        result = await context_cmd_module.cmd_join_context(
+            user_id, context_id, user_name
+        )
         await bot.send(event=event, message=result, at_sender=True, reply_message=True)
 
     except Exception as e:
@@ -422,7 +444,9 @@ async def handle_list_roles(bot: Bot, event: MessageEvent):
             lines.append(f"- {role.name} (ID: {role.role_id})")
             lines.append(f"  {role.description}")
 
-        await bot.send(event=event, message="\n".join(lines), at_sender=True, reply_message=True)
+        await bot.send(
+            event=event, message="\n".join(lines), at_sender=True, reply_message=True
+        )
 
     except Exception as e:
         logger.error(f"List roles command error: {e}")
@@ -449,7 +473,9 @@ async def handle_switch_role(bot: Bot, event: MessageEvent):
         role_id = message.replace("切换角色", "").strip()
 
         if not role_id:
-            await switch_role_cmd.finish("请指定要切换的角色ID\n格式: /切换角色 <角色ID>")
+            await switch_role_cmd.finish(
+                "请指定要切换的角色ID\n格式: /切换角色 <角色ID>"
+            )
 
         # 获取用户当前上下文
         user = await user_manager.get_user(user_id)
@@ -465,9 +491,13 @@ async def handle_switch_role(bot: Bot, event: MessageEvent):
 
         if success:
             role = await role_play_module.get_role(role_id)
-            await switch_role_cmd.finish(f"✅ 已切换到角色: {role.name if role else role_id}")
+            await switch_role_cmd.finish(
+                f"✅ 已切换到角色: {role.name if role else role_id}"
+            )
         else:
-            await switch_role_cmd.finish("❌ 切换角色失败\n可能原因: 角色ID不存在或角色未激活")
+            await switch_role_cmd.finish(
+                "❌ 切换角色失败\n可能原因: 角色ID不存在或角色未激活"
+            )
 
     except Exception as e:
         logger.error(f"Switch role command error: {e}")
