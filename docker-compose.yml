@@ -1,0 +1,33 @@
+version: "3"
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: kaoyan-robot-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  napcat:
+    environment:
+      - NAPCAT_UID=${NAPCAT_UID}
+      - NAPCAT_GID=${NAPCAT_GID}
+      - NAPCAT_WS_URL=ws://host.docker.internal:3000
+    ports:
+      - 3000:3000
+      - 3001:3001
+      - 6099:6099
+    container_name: napcat
+    network_mode: bridge
+    restart: always
+    image: mlikiowa/napcat-docker:latest
+
+volumes:
+  redis-data:

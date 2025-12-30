@@ -1,0 +1,145 @@
+[project]
+name = "kaoyan-408-qq-robot"
+version = "0.1.0"
+description = "kaoyan-408-qq-robot"
+readme = "README.md"
+requires-python = ">=3.11.0,<3.12"
+dependencies = [
+    "nonebot2[fastapi]>=2.4.4",
+    "nonebot-adapter-qq>=1.6.6",
+    "nonebot-adapter-console>=0.9.0",
+    "nonebot-adapter-onebot>=2.4.6",
+    "nest-asyncio>=1.6.0",
+    "nonebot-plugin-status>=0.9.0",
+    "langgraph>=0.6.11",
+    "langchain-community>=0.3.31",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "pex>=2.76.1",
+    "redis>=5.0.0",
+    "aiosqlite>=0.19.0",
+    "loguru>=0.7.0",
+    "sqlalchemy[asyncio]>=2.0.45",
+    "openai>=2.14.0",
+    "httpx[socks]>=0.28.1",
+    "uvicorn==0.20.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pyright[nodejs]",
+    "ruff",
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+]
+
+[tool.nonebot]
+plugin_dirs = ["src/plugins"]
+builtin_plugins = []
+
+[tool.nonebot.adapters]
+nonebot-adapter-onebot = [
+    { name = "OneBot V11", module_name = "nonebot.adapters.onebot.v11" },
+    { name = "OneBot V12", module_name = "nonebot.adapters.onebot.v12" }
+]
+
+
+[tool.nonebot.plugins]
+"@local" = []
+[tool.ruff]
+line-length = 88
+target-version = "py39"
+
+[tool.ruff.format]
+line-ending = "lf"
+
+[tool.ruff.lint]
+# For more rules, see https://docs.astral.sh/ruff/rules/.
+select = [
+    "F", # Pyflakes
+    "W", # pycodestyle warnings
+    "E", # pycodestyle errors
+    "I", # isort
+    "C90", # mccabe
+    "N", # pep8-naming
+    "PL", # pylint
+    "UP", # pyupgrade
+    "YTT", # flake8-2020
+    "ANN", # flake8-annotations
+    "ASYNC", # flake8-async
+    "BLE", # flake8-blind-except
+    "FBT", # flake8-boolean-trap
+    "B", # flake8-bugbear
+    "A", # flake8-builtins
+    "COM", # flake8-commas
+    "C4", # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "T20", # flake8-print
+    "PYI", # flake8-pyi
+    "Q", # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "SLOT", # flake8-slots
+    "TID", # flake8-tidy-imports
+    "TC", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    # "ERA",   # eradicate
+    "FAST", # FastAPI
+    "PERF", # Perflint
+    "PGH", # pygrep-hooks
+    "FURB", # refurb
+    "TRY", # tryceratops
+    "RUF", # Ruff-specific rules
+]
+ignore = [
+    "E402", # module-import-not-at-top-of-file  # nonebot2 require() violates this
+    "B008", # function-call-in-default-argument  # nonebot2 Depends() without Annotated violates this
+    "UP037", # quoted-annotation
+    # "RUF001",  # ambiguous-unicode-character-string
+    # "RUF002",  # ambiguous-unicode-character-docstring
+    # "RUF003",  # ambiguous-unicode-character-comment
+    # "ANN201",  # missing-return-type-undocumented-public-function
+    "ANN202", # missing-return-type-private-function
+    "ANN401", # any-type
+    "COM812", # missing-trailing-comma
+    "PLC0415", # import-outside-top-level
+]
+allowed-confusables = ["，", "。", "“", "”", "：", "；", "？", "！", "【", "】", "《", "》", "…", "—", "（", "）", "、"]
+
+[tool.ruff.lint.pyupgrade]
+keep-runtime-typing = true
+
+[tool.pyright]
+# For Pylance/Pyright configurations, see https://microsoft.github.io/pyright/#/configuration.
+pythonVersion = "3.9"
+pythonPlatform = "All"
+typeCheckingMode = "standard"
+
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+
+[kaoyan-408-qa-robot.prompts]
+
+
+[kaoyan-408-qa-robot.settings]
+indents = [
+    { name = "", description = "", prompt = "" }
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
+    "pytest-cov>=7.0.0",
+    "pytest-mock>=3.15.1",
+]
