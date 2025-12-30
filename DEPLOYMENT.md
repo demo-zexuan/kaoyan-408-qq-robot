@@ -517,5 +517,5 @@ LOG_LEVEL=DEBUG
 
 ## 获取帮助
 
-- 提交 Issue: [GitHub Issues](https://github.com/yourusername/kaoyan-408-qq-robot/issues)
+- 提交 Issue: [GitHub Issues](https://github.com/demo-zexuan/kaoyan-408-qq-robot/issues)
 - 查看文档: [README.md](README.md)
